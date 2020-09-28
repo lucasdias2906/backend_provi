@@ -1,29 +1,21 @@
-import { getRepository, Repository } from 'typeorm';
+import { getRepository } from 'typeorm';
+
 import IUsersRepository from '../../../repositories/IUserRepository';
 
 import ICreateUserDTO from '../dtos/ICreateUserDTO';
 
-import User from '../models/User';
+import User from '../entities/User';
 
 class UsersRepository implements IUsersRepository {
-    private ormRepository: Repository<User>;
-
-    constructor() {
-        // assim que o repositorio for carregados
-        this.ormRepository = getRepository(User);
-    }
-
-    // preocurando por id
-
     public async findById(id: string): Promise<User | undefined> {
-        const user = await this.ormRepository.findOne(id);
+        const user = await getRepository(User).findOne(id);
 
         return user;
     }
 
     // preocurando por email
     public async findByEmail(email: string): Promise<User | undefined> {
-        const user = await this.ormRepository.findOne({
+        const user = await getRepository(User).findOne({
             where: { email },
         });
 
@@ -31,24 +23,45 @@ class UsersRepository implements IUsersRepository {
     }
 
     public async findByCpf(cpf: string): Promise<User | undefined> {
-        const user = await this.ormRepository.findOne({
+        const user = await getRepository(User).findOne({
             where: { cpf },
         });
 
         return user;
     }
 
-    public async create(userdata: ICreateUserDTO): Promise<User> {
-        const user = this.ormRepository.create(userdata);
-
-        await this.ormRepository.save(user);
+    public async findByToken(token: string): Promise<User | undefined> {
+        const user = await getRepository(User).findOne({
+            where: { token, active: true },
+        });
 
         return user;
     }
 
-    public async save(user: User): Promise<User> {
-        return this.ormRepository.save(user);
+    public async create(userdata: ICreateUserDTO): Promise<User> {
+        const user = getRepository(User).create(userdata);
+        console.warn('ooooooooo', user);
+
+        await getRepository(User).save(user);
+
+        return user;
     }
+
+    public async save(user: ICreateUserDTO): Promise<User> {
+        return getRepository(User).save(user);
+    }
+
+    // public async createEmail({
+    //     email,
+    //     password,
+    // }: ICreateUserDTO): Promise<User> {
+    //     const user = getRepository(User).create({ email, password });
+
+    //     await getRepository(User).save(user);
+
+    //     return user;
+    // }
 }
 
-export default UsersRepository;
+const usersRepository = new UsersRepository();
+export default usersRepository;

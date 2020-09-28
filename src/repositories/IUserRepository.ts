@@ -1,4 +1,4 @@
-import User from '../modules/users/models/User';
+import User from '../modules/users/entities/User';
 import ICreateUserDTO from '../modules/users/dtos/ICreateUserDTO';
 
 export default interface IUserRepository {

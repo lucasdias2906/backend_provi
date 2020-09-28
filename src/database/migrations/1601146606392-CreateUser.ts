@@ -1,6 +1,6 @@
 import { MigrationInterface, QueryRunner, Table } from 'typeorm';
 
-export default class CreateUser1600964681039 implements MigrationInterface {
+export default class CreateUser1601146606392 implements MigrationInterface {
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.createTable(
             new Table({
@@ -8,58 +8,88 @@ export default class CreateUser1600964681039 implements MigrationInterface {
                 columns: [
                     {
                         name: 'id',
-                        type: 'integer',
+                        type: 'varchar',
                         isPrimary: true,
                     },
                     {
-                        name: 'name',
+                        name: 'token',
                         type: 'varchar',
+                        isNullable: true,
+                    },
+                    {
+                        name: 'full_name',
+                        type: 'varchar',
+                        isNullable: true,
+                    },
+                    {
+                        name: 'first_name',
+                        type: 'varchar',
+                        isNullable: true,
+                    },
+                    {
+                        name: 'last_name',
+                        type: 'varchar',
+                        isNullable: true,
                     },
                     {
                         name: 'email',
                         type: 'varchar',
-                        isUnique: true,
+                        isNullable: true,
                     },
                     {
                         name: 'password',
                         type: 'varchar',
+                        isNullable: true,
                     },
                     {
                         name: 'cpf',
                         type: 'varchar',
-                        isUnique: true,
+                        isNullable: true,
                     },
                     {
                         name: 'birthday',
                         type: 'varchar',
+                        isNullable: true,
                     },
                     {
                         name: 'phone',
                         type: 'integer',
+                        isNullable: true,
                     },
                     {
                         name: 'cep',
                         type: 'varchar',
+                        isNullable: true,
                     },
                     {
                         name: 'street',
                         type: 'varchar',
+                        isNullable: true,
                     },
                     {
-                        name: 'number',
+                        name: 'number_house',
                         type: 'integer',
+                        isNullable: true,
                     },
                     {
                         name: 'complement',
                         type: 'varchar',
+                        isNullable: true,
                     },
                     {
                         name: 'city',
                         type: 'varchar',
+                        isNullable: true,
                     },
                     {
                         name: 'state',
                         type: 'varchar',
+                        isNullable: true,
+                    },
+                    {
+                        name: 'active',
+                        type: 'boolean',
+                        default: true,
                     },
                     {
                         name: 'created_at',
@@ -76,7 +106,6 @@ export default class CreateUser1600964681039 implements MigrationInterface {
         );
     }
 
-    // se acontecer algum problema, na base de dados, usamos esse metodo dom pra casa de erro, ele da um DROP(DELETAR) a nossa tabela
     public async down(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.dropTable('users');
     }

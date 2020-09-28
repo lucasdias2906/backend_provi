@@ -1,21 +1,21 @@
 // uma biblioteca ou uma forma da gente implementar a questao de hash
-import { hash, compare } from 'bcryptjs';
+import { hashSync, genSaltSync, compareSync } from 'bcryptjs';
 
-import IHashProvider from '../models/IHashProvider';
+class BCryptHashProvider {
+    private PASSWORD_SIZE = 128;
 
-class BCryptHashProvider implements IHashProvider {
-    // criptografando a senha, o segundo parametro é o tamanho da senha que vai ser de 8
-    public async generateHash(payload: string): Promise<string> {
-        return hash(payload, 8);
-    }
+    private SALT_SIZE: string = genSaltSync(this.PASSWORD_SIZE);
 
-    public async compareHash(
-        payload: string,
-        hashed: string,
-    ): Promise<boolean> {
-        // compararando uma senha nao cript com uma senha ja cripto, para ver se é a mesma senha
-        return compare(payload, hashed);
-    }
+    // Criptografando a senha
+
+    public generateHash = (password: string): string => {
+        return hashSync(password, this.SALT_SIZE);
+    };
+
+    public compareHash = (password: string, hashed: string): boolean => {
+        return compareSync(password, hashed);
+    };
 }
 
-export default BCryptHashProvider;
+const Encrypted = new BCryptHashProvider();
+export default Encrypted;

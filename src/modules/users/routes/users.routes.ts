@@ -6,6 +6,10 @@ const usersRouter = Router();
 
 const usersController = new UsersController();
 
-usersRouter.post('/', usersController.create);
+usersRouter.post('/address', usersController.createAddress);
+usersRouter.post('/cpf', usersController.createCPF);
+usersRouter.post('/full-name', usersController.createFullName);
+
+usersRouter.post('/register', usersController.createUser);
 
 export default usersRouter;
