@@ -48,6 +48,7 @@ class UsersRepository implements IUsersRepository {
     }
 
     public async save(user: ICreateUserDTO): Promise<User> {
+        console.log('REP', user);
         return getRepository(User).save(user);
     }
 

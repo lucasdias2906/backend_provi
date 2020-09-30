@@ -2,7 +2,7 @@ import {
     Entity,
     Column,
     PrimaryGeneratedColumn,
-    CreateDateColumn,
+    // CreateDateColumn,
     UpdateDateColumn,
 } from 'typeorm';
 
@@ -10,9 +10,6 @@ import {
 class User {
     @PrimaryGeneratedColumn()
     id: string;
-
-    @Column()
-    token: string;
 
     @Column({ nullable: true })
     full_name: string;
@@ -56,10 +53,13 @@ class User {
     @Column({ nullable: true })
     state: string;
 
+    @Column({ nullable: true, type: 'float', precision: 10, scale: 6 })
+    amount_requested: number;
+
     @Column({ nullable: true })
     active: boolean;
 
-    @CreateDateColumn()
+    @Column('timestamp with time zone')
     created_at: Date;
 
     @UpdateDateColumn()

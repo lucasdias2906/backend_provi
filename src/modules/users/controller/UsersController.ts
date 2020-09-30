@@ -1,9 +1,14 @@
 import { Request, Response } from 'express';
 import CepPromise from 'cep-promise';
+import { verify } from 'jsonwebtoken';
+import { hashSync } from 'bcryptjs';
 import UsersRepository from '../repositories/UserRepository';
-// import { container } from 'tsyringe';
-import CreateUserService from '../services/CreateUserServices';
+
+import userService from '../services/CreateUserServices';
 import validators from '../validators/format';
+
+import authConfig from '../../../config/auth';
+// import encrypted from '../providers/Hash/implementations/BCryptHashProvider';
 
 const compareData = (rawData: string, curentData: string) => {
     if (rawData?.toLocaleLowerCase() === curentData?.toLocaleLowerCase())
@@ -13,8 +18,208 @@ const compareData = (rawData: string, curentData: string) => {
 };
 
 export default class UsersController {
+    public async createUser(req: Request, res: Response): Promise<any> {
+        const { email, password } = req.body;
+
+        const salt = 10;
+
+        console.log('PASSSAWORRDD');
+        const hashProvider = hashSync(password, salt);
+
+        try {
+            userService.create({
+                email,
+                password: hashProvider,
+            });
+            return res.status(201).send({
+                success: true,
+                'next-end-point': 'cpf',
+            });
+        } catch (error) {
+            console.error('ERRRRRROOOOR=>', error);
+        }
+
+        return res.status(404).send({
+            success: false,
+            message: 'Check E-mail and Password',
+        });
+    }
+
+    public async createCPF(req: Request, res: Response): Promise<any> {
+        const { sub } = await verify(req.body.token, authConfig.jwt.secret);
+        const user = await UsersRepository.findById(sub);
+        const cpfRequest = req.body?.cpf;
+        const cpfValidaate = validators.validatorCpf(cpfRequest);
+
+        if (!cpfValidaate) {
+            return res.status(404).send({
+                success: false,
+                message: 'Check CPF',
+            });
+        }
+
+        console.log('aaaaaaaaaaaaaaaaaaaa');
+        try {
+            if (cpfRequest === user?.cpf || !user?.cpf) {
+                userService.update({
+                    ...user,
+                    cpf: cpfRequest,
+                });
+                return res.status(201).send({
+                    success: true,
+                    'next-end-point': 'full-name',
+                });
+            }
+
+            userService.create({
+                ...user,
+                cpf: cpfRequest,
+            });
+            return res.status(201).send({
+                success: true,
+                'next-end-point': 'full-name',
+            });
+        } catch (error) {
+            console.log(error);
+            return res.status(404).send({
+                success: false,
+                message: 'Failed request',
+                dataError: error,
+            });
+        }
+    }
+
+    public async createFullName(req: Request, res: Response): Promise<any> {
+        const { sub } = await verify(req.body.token, authConfig.jwt.secret);
+        const user = await UsersRepository.findById(sub);
+        const full_nameReq = req.body.full_name;
+
+        // console.log('sdsdsdsdsds', user);
+        if (user?.cpf) {
+            try {
+                if (full_nameReq === user.full_name || !user?.full_name) {
+                    userService.update({
+                        ...user,
+                        full_name: full_nameReq,
+                        first_name: full_nameReq
+                            .split(' ')
+                            .slice(0, 1)
+                            .join(' '),
+                        last_name: full_nameReq
+                            .split(' ')
+                            .slice(3, 4)
+                            .join(' '),
+                    });
+                    return res.status(201).send({
+                        success: true,
+                        'next-end-point': 'birthday',
+                    });
+                }
+
+                userService.create({
+                    ...user,
+                    full_name: full_nameReq,
+                    first_name: full_nameReq.split(' ').slice(0, 1).join(' '),
+                    last_name: full_nameReq.split(' ').slice(3, 4).join(' '),
+                });
+                return res.status(201).send({
+                    success: true,
+                    'next-end-point': 'birth-date',
+                });
+            } catch (error) {
+                return console.log(error);
+            }
+        }
+
+        return res.status(404).send({
+            success: false,
+            'next-end-point': 'cpf',
+        });
+    }
+
+    public async createBirthday(req: Request, res: Response): Promise<any> {
+        const { sub } = await verify(req.body.token, authConfig.jwt.secret);
+        const user = await UsersRepository.findById(sub);
+        const birthdayReq = req.body.birthday;
+
+        console.log('RAW', birthdayReq, user?.birthday, user);
+        if (user?.full_name) {
+            try {
+                if (birthdayReq === user.birthday || !user?.birthday) {
+                    userService.update({
+                        ...user,
+                        birthday: birthdayReq,
+                    });
+                    return res.status(201).send({
+                        success: true,
+                        'next-end-point': 'phone',
+                    });
+                }
+
+                userService.create({
+                    ...user,
+                    birthday: birthdayReq,
+                });
+                return res.status(201).send({
+                    success: true,
+                    'next-end-point': 'phone',
+                });
+            } catch (error) {
+                return console.log(error);
+            }
+        }
+
+        return res.status(404).send({
+            success: false,
+            'next-end-point': 'birth-date',
+        });
+    }
+
+    public async createPhone(req: Request, res: Response): Promise<any> {
+        const { sub } = await verify(req.body.token, authConfig.jwt.secret);
+        const user = await UsersRepository.findById(sub);
+        const phoneReq = req.body.phone;
+
+        // console.log('RAW', phoneReq, user?.phone, user);
+
+        if (user?.birthday) {
+            try {
+                if (phoneReq === user.phone || !user?.phone) {
+                    userService.update({
+                        ...user,
+                        phone: validators.mTel(phoneReq),
+                    });
+                    return res.status(201).send({
+                        success: true,
+                        'next-end-point': 'address',
+                    });
+                }
+
+                userService.create({
+                    ...user,
+                    phone: phoneReq,
+                });
+                return res.status(201).send({
+                    success: true,
+                    'next-end-point': 'address',
+                });
+            } catch (error) {
+                return console.log(error);
+            }
+        }
+
+        return res.status(404).send({
+            success: false,
+            'next-end-point': 'birth-date',
+        });
+    }
+
     public async createAddress(req: Request, res: Response): Promise<Response> {
-        const { cep, number, complement } = req.body;
+        const { sub } = await verify(req.body.token, authConfig.jwt.secret);
+        const user = await UsersRepository.findById(sub);
+        const { cep, number_house, complement } = req.body;
+
+        console.log('RAW', req.body.cep, user?.phone, user);
 
         // se existir o cep
         if (cep) {
@@ -36,92 +241,103 @@ export default class UsersController {
             }
         }
 
-        try {
-            const user = await new CreateUserService().update({
-                cep: req.body.cep,
-                street: req.body.street,
-                number,
-                complement,
-                city: req.body.city,
-                state: req.body.state,
-            });
+        if (user?.phone) {
+            try {
+                if (req.body.cep === user.cep || !user?.cep) {
+                    userService.update({
+                        ...user,
+                        cep: req.body.cep,
+                        street: req.body.street,
+                        number_house,
+                        complement,
+                        city: req.body.city,
+                        state: req.body.state,
+                    });
+                    return res.status(201).send({
+                        success: true,
+                        'next-end-point': 'address',
+                    });
+                }
 
-            return res.json(user);
-        } catch (error) {
-            return res.status(400).json({ error });
-        }
-    }
-
-    public async createCPF(req: Request, res: Response): Promise<any> {
-        // CHECK TOKEN IF OKAY && CPF
-        if (validators.validatorCpf(req.body?.data)) {
-            // update user with CPF where token is the some req.body.token
-            return res.status(201).send({
-                success: true,
-                'next-end-point': 'full-name',
-            });
+                userService.create({
+                    ...user,
+                    cep: req.body.cep,
+                    street: req.body.street,
+                    number_house,
+                    complement,
+                    city: req.body.city,
+                    state: req.body.state,
+                });
+                return res.status(201).send({
+                    success: true,
+                    'next-end-point': 'Amount requested',
+                });
+            } catch (error) {
+                return res.status(404).send({
+                    success: false,
+                    'next-end-point': 'phone',
+                });
+            }
         }
 
         return res.status(404).send({
             success: false,
-            'next-end-point': 'cpf',
+            'next-end-point': 'phone',
         });
     }
 
-    public async createFullName(req: Request, res: Response): Promise<any> {
-        // CHECK TOKEN IF OKAY && CPF
+    public async createAmount_requested(
+        req: Request,
+        res: Response,
+    ): Promise<any> {
+        const { sub } = await verify(req.body.token, authConfig.jwt.secret);
+        const { amount_requested } = req.body;
+        const user = await UsersRepository.findById(sub);
+        // console.log('EEEEEEEEEEE', user);
 
-        // verificando token
+        console.log('RAW', amount_requested, user?.amount_requested);
+        console.log(
+            'amount_requested',
+            String(amount_requested).replace('.', ''),
+        );
+        console.log('user amount_requested', user?.amount_requested);
 
-        const user = await UsersRepository.findByToken(req.body.token);
-        if (user?.cpf) {
+        if (user?.cep) {
             try {
-                if (req.body.data === user.full_name) {
-                    await new CreateUserService().update({
+                if (
+                    amount_requested === user.amount_requested ||
+                    !user?.amount_requested
+                ) {
+                    userService.update({
                         ...user,
+                        amount_requested: validators.convertToCent(
+                            amount_requested,
+                        ),
+                    });
+                    return res.status(201).send({
+                        success: true,
+                        'next-end-point': 'address',
                     });
                 }
-
-                await new CreateUserService().create({
+                userService.create({
                     ...user,
-                    full_name: req.body.data,
+                    amount_requested: validators.convertToCent(
+                        amount_requested,
+                    ),
                 });
                 return res.status(201).send({
                     success: true,
-                    'next-end-point': 'birth-date',
+                    'next-end-point': 'address',
                 });
             } catch (error) {
+                console.log(error);
                 return res.status(400).json({ error });
             }
         }
 
         return res.status(404).send({
             success: false,
-            'next-end-point': 'cpf',
-        });
-    }
-
-    public async createUser(req: Request, res: Response): Promise<any> {
-        const { email, password } = req.body;
-        // verificando token
-
-        if (email && password) {
-            try {
-                await new CreateUserService().create({
-                    email,
-                    password,
-                });
-                return res.status(201).send({
-                    success: true,
-                    'next-end-point': 'cpf',
-                });
-            } catch (error) {
-                console.error('ERRRRRROOOOR=>', error);
-            }
-        }
-        return res.status(404).send({
-            success: false,
-            message: 'Check E-mail and Password',
+            'next-end-point': 'birth-date',
         });
     }
 }

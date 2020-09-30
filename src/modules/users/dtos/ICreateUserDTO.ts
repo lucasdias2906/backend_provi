@@ -1,11 +1,10 @@
 export default interface ICreateUserDTO {
-    token?: string;
     full_name?: string;
     id?: string;
     first_name?: string;
     last_name?: string;
     email?: string;
-    password?: string;
+    password?: any;
     cpf?: string;
     birthday?: string;
     cep?: string;
@@ -13,7 +12,8 @@ export default interface ICreateUserDTO {
     complement?: string;
     city?: string;
     state?: string;
-    phone?: number;
+    phone?: any;
     active?: boolean;
     number_house?: number;
+    updated_at?: any;
 }
