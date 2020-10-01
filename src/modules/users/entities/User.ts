@@ -9,55 +9,55 @@ import {
 @Entity('users')
 class User {
     @PrimaryGeneratedColumn()
-    id: any;
+    id?: any;
 
     @Column({ nullable: true })
-    full_name: string;
+    full_name?: string;
 
     @Column({ nullable: true })
-    first_name: string;
+    first_name?: string;
 
     @Column({ nullable: true })
-    last_name: string;
+    last_name?: string;
 
     @Column({ nullable: true })
-    email: string;
+    email?: string;
 
     @Column({ nullable: true })
-    password: string;
+    password?: string;
 
     @Column({ nullable: true })
-    cpf: string;
+    cpf?: string;
 
     @Column({ nullable: true })
-    birthday: string;
+    birthday?: string;
 
     @Column({ nullable: true })
-    phone: number;
+    phone?: number;
 
     @Column({ nullable: true })
-    cep: string;
+    cep?: string;
 
     @Column({ nullable: true })
-    street: string;
+    street?: string;
 
     @Column({ nullable: true })
-    number_house: number;
+    number_house?: number;
 
     @Column({ nullable: true })
-    complement: string;
+    complement?: string;
 
     @Column({ nullable: true })
-    city: string;
+    city?: string;
 
     @Column({ nullable: true })
-    state: string;
+    state?: string;
 
     @Column({ nullable: true, type: 'float', precision: 10, scale: 6 })
-    amount_requested: number;
+    amount_requested?: number;
 
     @Column({ nullable: true })
-    active: boolean;
+    active?: boolean;
 
     @Column('timestamp with time zone')
     created_at?: Date;

@@ -36,7 +36,7 @@ export default class UsersController {
         console.log(cpfRequest, user.cpf);
         try {
             if (
-                cpfRequest === user?.cpf?.replace(/['/']/g, '').trim() ||
+                cpfRequest === user?.cpf?.replace(/./g, '').trim() ||
                 !user?.cpf
             ) {
                 userService.update({

@@ -16,5 +16,6 @@ export default interface ICreateUserDTO {
     phone?: any;
     active?: boolean;
     number_house?: number;
+    amount_requested?: number;
     updated_at?: any;
 }

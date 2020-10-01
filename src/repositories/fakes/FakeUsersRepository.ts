@@ -5,7 +5,7 @@ import ICreateUserDTO from '../../modules/users/dtos/ICreateUserDTO';
 import User from '../../modules/users/entities/User';
 
 class FakeUsersRepository implements IUsersRepository {
-    private users: User[] = [
+    public users: User[] = [
         {
             id: '67',
             full_name: 'Lucas Paulo de Sousa',
@@ -25,6 +25,8 @@ class FakeUsersRepository implements IUsersRepository {
             city: 'Cajamar',
             amount_requested: 150020,
             active: true,
+            created_at: new Date(),
+            updated_at: new Date(),
         },
     ];
 
@@ -55,6 +57,18 @@ class FakeUsersRepository implements IUsersRepository {
         this.users.push(user);
 
         return user;
+    }
+
+    public async update(userdata: ICreateUserDTO): Promise<any> {
+        const user = this.findById(userdata.id);
+
+        let i: any;
+
+        for (i in user) {
+            if (this.users[i].id === (await user).id) {
+                this.users[i] = userdata;
+            }
+        }
     }
 
     public async save(user: User): Promise<User> {
