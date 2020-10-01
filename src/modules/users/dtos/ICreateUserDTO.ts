@@ -1,6 +1,7 @@
 export default interface ICreateUserDTO {
     full_name?: string;
-    id?: string;
+    id?: any;
+    token?: string;
     first_name?: string;
     last_name?: string;
     email?: string;

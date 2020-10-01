@@ -1,11 +1,11 @@
 import { Router } from 'express';
 
 import usersRoutes from '../modules/users/routes/users.routes';
-import sessionsRoutes from '../modules/users/routes/sessions.routes';
+import registerRoutes from '../modules/users/routes/register.routes';
 
 const routes = Router();
 
 routes.use('/users', usersRoutes);
-routes.use('/session', sessionsRoutes);
+routes.use('/register', registerRoutes);
 
 export default routes;

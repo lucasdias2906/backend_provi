@@ -9,7 +9,7 @@ import {
 @Entity('users')
 class User {
     @PrimaryGeneratedColumn()
-    id: string;
+    id: any;
 
     @Column({ nullable: true })
     full_name: string;
@@ -60,10 +60,10 @@ class User {
     active: boolean;
 
     @Column('timestamp with time zone')
-    created_at: Date;
+    created_at?: Date;
 
     @UpdateDateColumn()
-    updated_at: Date;
+    updated_at?: Date;
 }
 
 export default User;

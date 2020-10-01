@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
 import CepPromise from 'cep-promise';
 import { verify } from 'jsonwebtoken';
-import { hashSync } from 'bcryptjs';
 import UsersRepository from '../repositories/UserRepository';
 
 import userService from '../services/CreateUserServices';
@@ -18,37 +17,13 @@ const compareData = (rawData: string, curentData: string) => {
 };
 
 export default class UsersController {
-    public async createUser(req: Request, res: Response): Promise<any> {
-        const { email, password } = req.body;
-
-        const salt = 10;
-
-        console.log('PASSSAWORRDD');
-        const hashProvider = hashSync(password, salt);
-
-        try {
-            userService.create({
-                email,
-                password: hashProvider,
-            });
-            return res.status(201).send({
-                success: true,
-                'next-end-point': 'cpf',
-            });
-        } catch (error) {
-            console.error('ERRRRRROOOOR=>', error);
-        }
-
-        return res.status(404).send({
-            success: false,
-            message: 'Check E-mail and Password',
-        });
-    }
-
     public async createCPF(req: Request, res: Response): Promise<any> {
-        const { sub } = await verify(req.body.token, authConfig.jwt.secret);
+        const { sub }: any = await verify(
+            req.body.token,
+            authConfig.jwt.secret,
+        );
         const user = await UsersRepository.findById(sub);
-        const cpfRequest = req.body?.cpf;
+        const cpfRequest = req.body?.data;
         const cpfValidaate = validators.validatorCpf(cpfRequest);
 
         if (!cpfValidaate) {
@@ -58,12 +33,15 @@ export default class UsersController {
             });
         }
 
-        console.log('aaaaaaaaaaaaaaaaaaaa');
+        console.log(cpfRequest, user.cpf);
         try {
-            if (cpfRequest === user?.cpf || !user?.cpf) {
+            if (
+                cpfRequest === user?.cpf?.replace(/['/']/g, '').trim() ||
+                !user?.cpf
+            ) {
                 userService.update({
                     ...user,
-                    cpf: cpfRequest,
+                    cpf: validators.formatcpf(cpfRequest),
                 });
                 return res.status(201).send({
                     success: true,
@@ -73,7 +51,7 @@ export default class UsersController {
 
             userService.create({
                 ...user,
-                cpf: cpfRequest,
+                cpf: validators.formatcpf(cpfRequest),
             });
             return res.status(201).send({
                 success: true,
@@ -90,9 +68,12 @@ export default class UsersController {
     }
 
     public async createFullName(req: Request, res: Response): Promise<any> {
-        const { sub } = await verify(req.body.token, authConfig.jwt.secret);
+        const { sub }: any = await verify(
+            req.body.token,
+            authConfig.jwt.secret,
+        );
         const user = await UsersRepository.findById(sub);
-        const full_nameReq = req.body.full_name;
+        const full_nameReq = req.body.data;
 
         // console.log('sdsdsdsdsds', user);
         if (user?.cpf) {
@@ -112,7 +93,7 @@ export default class UsersController {
                     });
                     return res.status(201).send({
                         success: true,
-                        'next-end-point': 'birthday',
+                        'next-end-point': 'birth-date',
                     });
                 }
 
@@ -138,17 +119,23 @@ export default class UsersController {
     }
 
     public async createBirthday(req: Request, res: Response): Promise<any> {
-        const { sub } = await verify(req.body.token, authConfig.jwt.secret);
+        const { sub }: any = await verify(
+            req.body.token,
+            authConfig.jwt.secret,
+        );
         const user = await UsersRepository.findById(sub);
-        const birthdayReq = req.body.birthday;
+        const birthdayReq = req.body.data;
 
-        console.log('RAW', birthdayReq, user?.birthday, user);
         if (user?.full_name) {
             try {
-                if (birthdayReq === user.birthday || !user?.birthday) {
+                if (
+                    birthdayReq ===
+                        user?.birthday?.replace(/['/']/g, '').trim() ||
+                    !user.birthday
+                ) {
                     userService.update({
                         ...user,
-                        birthday: birthdayReq,
+                        birthday: validators.mBirthDay(birthdayReq),
                     });
                     return res.status(201).send({
                         success: true,
@@ -158,14 +145,18 @@ export default class UsersController {
 
                 userService.create({
                     ...user,
-                    birthday: birthdayReq,
+                    birthday: validators.mBirthDay(birthdayReq),
                 });
                 return res.status(201).send({
                     success: true,
                     'next-end-point': 'phone',
                 });
             } catch (error) {
-                return console.log(error);
+                console.log(error);
+                return res.status(404).send({
+                    success: false,
+                    'next-end-point': 'birth-date',
+                });
             }
         }
 
@@ -176,9 +167,12 @@ export default class UsersController {
     }
 
     public async createPhone(req: Request, res: Response): Promise<any> {
-        const { sub } = await verify(req.body.token, authConfig.jwt.secret);
+        const { sub }: any = await verify(
+            req.body.token,
+            authConfig.jwt.secret,
+        );
         const user = await UsersRepository.findById(sub);
-        const phoneReq = req.body.phone;
+        const phoneReq = req.body.data;
 
         // console.log('RAW', phoneReq, user?.phone, user);
 
@@ -187,7 +181,7 @@ export default class UsersController {
                 if (phoneReq === user.phone || !user?.phone) {
                     userService.update({
                         ...user,
-                        phone: validators.mTel(phoneReq),
+                        phone: phoneReq,
                     });
                     return res.status(201).send({
                         success: true,
@@ -215,7 +209,10 @@ export default class UsersController {
     }
 
     public async createAddress(req: Request, res: Response): Promise<Response> {
-        const { sub } = await verify(req.body.token, authConfig.jwt.secret);
+        const { sub }: any = await verify(
+            req.body.token,
+            authConfig.jwt.secret,
+        );
         const user = await UsersRepository.findById(sub);
         const { cep, number_house, complement } = req.body;
 
@@ -255,7 +252,7 @@ export default class UsersController {
                     });
                     return res.status(201).send({
                         success: true,
-                        'next-end-point': 'address',
+                        'next-end-point': 'cep',
                     });
                 }
 
@@ -290,8 +287,11 @@ export default class UsersController {
         req: Request,
         res: Response,
     ): Promise<any> {
-        const { sub } = await verify(req.body.token, authConfig.jwt.secret);
-        const { amount_requested } = req.body;
+        const { sub }: any = await verify(
+            req.body.token,
+            authConfig.jwt.secret,
+        );
+        const amount_requested = req.body.data;
         const user = await UsersRepository.findById(sub);
         // console.log('EEEEEEEEEEE', user);
 
@@ -316,7 +316,7 @@ export default class UsersController {
                     });
                     return res.status(201).send({
                         success: true,
-                        'next-end-point': 'address',
+                        'next-end-point': 'cpf',
                     });
                 }
                 userService.create({
@@ -327,7 +327,7 @@ export default class UsersController {
                 });
                 return res.status(201).send({
                     success: true,
-                    'next-end-point': 'address',
+                    'next-end-point': 'cpf',
                 });
             } catch (error) {
                 console.log(error);
@@ -337,7 +337,7 @@ export default class UsersController {
 
         return res.status(404).send({
             success: false,
-            'next-end-point': 'birth-date',
+            'next-end-point': 'address',
         });
     }
 }
