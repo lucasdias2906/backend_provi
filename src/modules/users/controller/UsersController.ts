@@ -18,10 +18,10 @@ const compareData = (rawData: string, curentData: string) => {
 
 export default class UsersController {
     public async createCPF(req: Request, res: Response): Promise<any> {
-        const { sub }: any = await verify(
+        const { sub }: any =  verify(
             req.body.token,
             authConfig.jwt.secret,
-        );
+            );
         const user = await UsersRepository.findById(sub);
         const cpfRequest = req.body?.data;
         const cpfValidaate = validators.validatorCpf(cpfRequest);
@@ -65,7 +65,7 @@ export default class UsersController {
     }
 
     public async createFullName(req: Request, res: Response): Promise<any> {
-        const { sub }: any = await verify(
+        const { sub }: any = verify(
             req.body.token,
             authConfig.jwt.secret,
         );
@@ -177,7 +177,7 @@ export default class UsersController {
     }
 
     public async createPhone(req: Request, res: Response): Promise<any> {
-        const { sub }: any = await verify(
+        const { sub }: any = verify(
             req.body.token,
             authConfig.jwt.secret,
         );
@@ -218,7 +218,7 @@ export default class UsersController {
     }
 
     public async createAddress(req: Request, res: Response): Promise<Response> {
-        const { sub }: any = await verify(
+        const { sub }: any = verify(
             req.body.token,
             authConfig.jwt.secret,
         );
@@ -294,7 +294,7 @@ export default class UsersController {
         req: Request,
         res: Response,
     ): Promise<any> {
-        const { sub }: any = await verify(
+        const { sub }: any = verify(
             req.body.token,
             authConfig.jwt.secret,
         );

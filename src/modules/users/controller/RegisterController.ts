@@ -33,13 +33,13 @@ class RegisterController {
                 token,
             });
         } catch (error) {
-            console.error('ERRRRRROOOOR=>', error);
+            return res.status(404).send({
+                success: false,
+                message: error
+            });
+
         }
 
-        return res.status(404).send({
-            success: false,
-            'next-end-point': 'full-name',
-        });
     }
 }
 

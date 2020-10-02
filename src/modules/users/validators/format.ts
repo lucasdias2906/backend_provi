@@ -42,7 +42,6 @@ class FormatValidators {
             2,
         )}) ${dateValue.substr(2, 5)}-${dateValue.substr(7, 9)}`;
 
-        console.warn(format);
         return format;
     }
 

@@ -16,35 +16,25 @@ const compareData = (rawData: string, curentData: string) => {
     return rawData;
 };
 
-
-// const FakeUsersRepository.dateUpdate = ;
-
 describe('CreateUser', () => {
     it('Fazendo a criação do cpf', async () => {
         const user = await FakeUsersRepository.findById(sub);
         const cpfRequest = '92436812144';
 
-
         expect(validators.validatorCpf(cpfRequest)).toBe(true);
-
-
 
         if (
             cpfRequest === user?.cpf?.replace(/[^\d]/g, '').trim() ||
             !user?.cpf?.replace(/[^\d]/g, '').trim()
             ) {
-                console.log("CPF REQUEST", cpfRequest)
-                console.log("USER CPF", user?.cpf?.replace(/./g, ''))
 
 
-            console.log("ENTROU NO UPDATE")
             FakeUsersRepository.update({
                 ...user,
                 cpf: validators.formatcpf(cpfRequest),
                 updated_at: Date(),
             });
 
-            console.log('DEPOIS DO UPDATE', FakeUsersRepository.users );
             expect(FakeUsersRepository.users[0].updated_at).toBe(FakeUsersRepository.dateUpdate);
 
             return;
@@ -56,14 +46,11 @@ describe('CreateUser', () => {
             cpf: validators.formatcpf(cpfRequest),
         });
 
-        console.log('DEPOIS DO CREATE', FakeUsersRepository.users );
-
         expect(FakeUsersRepository.users.length).toBe(2);
 
         expect(FakeUsersRepository.users[1].cpf.replace(/[^\d]/g, '')).toBe(
             cpfRequest,
             );
-
 
         return user;
     });
@@ -87,7 +74,6 @@ describe('CreateUser', () => {
                 });
 
 
-                console.log('DEPOIS DO UPDATE', FakeUsersRepository.users );
                 expect(FakeUsersRepository.users[0].updated_at).toBe(FakeUsersRepository.dateUpdate);
 
                 return;
@@ -100,7 +86,6 @@ describe('CreateUser', () => {
             first_name: fullNameRequest.split(' ').slice(0, 1).join(' '),
             last_name: fullNameRequest.split(' ').slice(3, 4).join(' '),
         });
-
 
         expect(FakeUsersRepository.users.length).toBe(2);
         expect(FakeUsersRepository.users[1].full_name).toBe(fullNameRequest);
@@ -129,8 +114,6 @@ describe('CreateUser', () => {
                     updated_at: Date(),
                 });
 
-                console.log('DEPOIS DO UPDATE', FakeUsersRepository.users );
-
                 expect(FakeUsersRepository.users[0].updated_at).toBe(FakeUsersRepository.dateUpdate);
 
                 return;
@@ -141,9 +124,6 @@ describe('CreateUser', () => {
                 birthday: validators.mBirthDay(birhDayRequest),
             });
         }
-
-        console.log('DEPOIS DO CREATE', FakeUsersRepository.users );
-
 
         expect(FakeUsersRepository.users.length).toBe(2);
         expect(
@@ -158,9 +138,6 @@ describe('CreateUser', () => {
 
         const user = await FakeUsersRepository.findById(sub);
 
-        console.log(phoneReq, user.phone)
-
-        console.log('ANTES DO CREATE', user);
         if (user?.birthday) {
             if (phoneReq === user.phone || !user?.phone) {
                 FakeUsersRepository.update({
@@ -169,21 +146,18 @@ describe('CreateUser', () => {
                     updated_at: Date(),
                 });
 
-            console.log('DEPOIS DO UPDATE', FakeUsersRepository.users );
 
                 expect(FakeUsersRepository.users[0].updated_at).toBe(FakeUsersRepository.dateUpdate);
 
                 return;
             }
 
-            console.log("entrou no create")
             FakeUsersRepository.create({
                 ...user,
                 phone: phoneReq,
             });
         }
 
-        console.log('DEPOIS DO CREATE', FakeUsersRepository.users );
         expect(FakeUsersRepository.users.length).toBe(2);
         expect(FakeUsersRepository.users[1].phone).toBe(phoneReq);
 
@@ -210,7 +184,6 @@ describe('CreateUser', () => {
 
         if (user?.phone) {
             if (cepReq === user.cep || !user?.cep) {
-                console.log("entrou no update")
                 FakeUsersRepository.update({
                     ...user,
                     cep: cepReq,
@@ -227,7 +200,6 @@ describe('CreateUser', () => {
                 return;
             }
 
-            console.log("entrou no create")
             FakeUsersRepository.create({
                 ...user,
                 cep: cepReq,
@@ -239,23 +211,18 @@ describe('CreateUser', () => {
             });
         }
 
-
-        console.log('ooooooooooooo', user);
         expect(FakeUsersRepository.users.length).toBe(2);
         expect(FakeUsersRepository.users[1].cep).toBe(cepReq);
 
         return user;
     });
 
-    it.only('Fazendo a criação do Amount Requested', async () => {
+    it('Fazendo a criação do Amount Requested', async () => {
         const amount_requested = 150020;
 
         const amount_requestedReq = validators.convertToCent(amount_requested)
 
         const user = await FakeUsersRepository.findById(sub);
-
-        console.log('ANTES DO UPDATE', user);
-
 
         if (user?.cep) {
             if (
@@ -268,9 +235,6 @@ describe('CreateUser', () => {
                     updated_at: Date(),
                 });
 
-                console.log("DEPOIS DO CREATE",FakeUsersRepository.users);
-
-
                 expect(FakeUsersRepository.users[0].updated_at).toBe(FakeUsersRepository.dateUpdate);
 
                 return;
@@ -282,9 +246,7 @@ describe('CreateUser', () => {
             });
         }
 
-
         expect(FakeUsersRepository.users.length).toBe(2);
-        console.log("DEPOIS DO CREATE",FakeUsersRepository.users);
         expect(FakeUsersRepository.users[1].amount_requested).toBe(
             amount_requestedReq,
         );
