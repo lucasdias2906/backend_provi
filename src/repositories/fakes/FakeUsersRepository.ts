@@ -10,7 +10,7 @@ class FakeUsersRepository implements IUsersRepository {
 
     public users: User[] = [
         {
-            id: '67',
+            id: "67",
             full_name: 'Lucas Paulo de Sousa',
             first_name: 'Lucas',
             last_name: 'Sousa',
@@ -39,12 +39,6 @@ class FakeUsersRepository implements IUsersRepository {
         return findUser;
     }
 
-    public async findByEmail(email: string): Promise<User | undefined> {
-        const findUser = this.users.find(user => user.email === email);
-
-        return findUser;
-    }
-
     public async create(userdata: ICreateUserDTO): Promise<User> {
         const user = new User();
 
@@ -52,12 +46,11 @@ class FakeUsersRepository implements IUsersRepository {
 
         if (userdata.id) {
             this.update({
-                ...userdata,
+                id: userdata.id + 1,
                 active: false,
                 updated_at: Date(),
             });
         }
-
         this.users.push(user);
 
         return user;

@@ -26,9 +26,6 @@ interface IUserData {
 
 class CreateUserService {
 
-    dateUpdate = new Date
-
-
     public update(data: IUserData): Promise<User> {
         return UsersRepository.save({
             ...data,
@@ -40,7 +37,7 @@ class CreateUserService {
 
         if (data.id) {
             this.update({
-                ...data,
+                id: data.id,
                 active: false,
                 updated_at: Date(),
             });

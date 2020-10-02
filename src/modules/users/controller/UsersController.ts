@@ -28,8 +28,8 @@ export default class UsersController {
 
         try {
             if (
-                cpfRequest === user?.cpf?.replace(/./g, '').trim() ||
-                !user?.cpf?.replace(/./g, '').trim()
+                cpfRequest === user?.cpf?.replace(/[^\d]/g, '').trim() ||
+                !user?.cpf?.replace(/[^\d]/g, '').trim()
             ) {
                 userService.update({
                     ...user,
@@ -86,7 +86,7 @@ export default class UsersController {
                     });
                 }
 
-                userService.create({
+                await userService.create({
                     ...user,
                     full_name: full_nameReq,
                     first_name: full_nameReq.split(' ').slice(0, 1).join(' '),
@@ -177,39 +177,39 @@ export default class UsersController {
         const user = await UsersRepository.findById(sub);
         const phoneReq = req.body.data;
 
-
         if (user?.birthday) {
             try {
-                if (phoneReq === user.phone || !user?.phone) {
+                console.log(phoneReq,user.phone )
+                if (phoneReq == user.phone || !user?.phone) {
                     userService.update({
                         ...user,
                         phone: phoneReq,
                     });
                     return res.status(201).send({
                         success: true,
-                        'next-end-point': 'address',
+                        'next-end-point': 'birth-date',
                     });
                 }
 
-                userService.create({
+                await userService.create({
                     ...user,
                     phone: phoneReq,
                 });
                 return res.status(201).send({
                     success: true,
-                    'next-end-point': 'birth-date',
+                    'next-end-point': 'Address',
                 });
             } catch (error) {
                 return res.status(404).send({
                     success: false,
-                    'next-end-point': 'birth-date',
+                    'next-end-point': 'Birth-date',
                 });
             }
         }
 
         return res.status(404).send({
             success: false,
-            'next-end-point': 'birth-date',
+            'next-end-point': 'Birth-date',
         });
     }
 
@@ -293,30 +293,25 @@ export default class UsersController {
         const amount_requested = req.body.data;
         const user = await UsersRepository.findById(sub);
 
+        const ConvAmountRequest = validators.convertToCent(amount_requested)
 
-
-        if (user?.cep) {
+        if (user?.birthday) {
             try {
-                if (
-                    amount_requested === user.amount_requested ||
-                    !user?.amount_requested
-                ) {
+                console.log(ConvAmountRequest,user.amount_requested )
+                if (ConvAmountRequest === user.amount_requested || !user?.amount_requested) {
                     userService.update({
                         ...user,
-                        amount_requested: validators.convertToCent(
-                            amount_requested,
-                        ),
+                        amount_requested: ConvAmountRequest,
                     });
                     return res.status(201).send({
                         success: true,
-                        'next-end-point': 'cpf',
+                        'next-end-point': 'birth-date',
                     });
                 }
-                userService.create({
+
+                await userService.create({
                     ...user,
-                    amount_requested: validators.convertToCent(
-                        amount_requested,
-                    ),
+                    amount_requested: ConvAmountRequest,
                 });
                 return res.status(201).send({
                     success: true,

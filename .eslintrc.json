@@ -26,7 +26,7 @@
     "rules": {
         "no-console": "off",
         "max-classes-per-file": "off",
-        // "import/export": "off",
+        "eqeqeq":"off",
         "consistent-return": "off",
         "@typescript-eslint/no-explicit-any": "off",
         "no-await-in-loop": "off",
