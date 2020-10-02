@@ -179,7 +179,6 @@ export default class UsersController {
 
         if (user?.birthday) {
             try {
-                console.log(phoneReq,user.phone )
                 if (phoneReq == user.phone || !user?.phone) {
                     userService.update({
                         ...user,
@@ -297,7 +296,6 @@ export default class UsersController {
 
         if (user?.birthday) {
             try {
-                console.log(ConvAmountRequest,user.amount_requested )
                 if (ConvAmountRequest === user.amount_requested || !user?.amount_requested) {
                     userService.update({
                         ...user,

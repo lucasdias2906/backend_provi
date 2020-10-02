@@ -11,9 +11,9 @@ const { sub }: any = verify(tokenReq, authConfig.jwt.secret);
 
 
 describe('CreateUser', () => {
-    it('Fazendo a criação do cpf', async () => {
+    it.only('Fazendo a criação do cpf', async () => {
         const user = await FakeUsersRepository.findById(sub);
-        const cpfRequest = '36824402591';
+        const cpfRequest = '52873772824';
 
         expect(validators.validatorCpf(cpfRequest)).toBe(true);
 
@@ -21,7 +21,6 @@ describe('CreateUser', () => {
             cpfRequest === user?.cpf?.replace(/[^\d]/g, '').trim() ||
             !user?.cpf?.replace(/[^\d]/g, '').trim()
             ) {
-
 
             FakeUsersRepository.update({
                 ...user,
@@ -31,7 +30,6 @@ describe('CreateUser', () => {
 
             expect(FakeUsersRepository.users[0].updated_at).toBe(FakeUsersRepository.dateUpdate);
             return;
-
         }
 
         FakeUsersRepository.create({
@@ -39,10 +37,7 @@ describe('CreateUser', () => {
             cpf: validators.formatcpf(cpfRequest),
         });
 
-        console.log(FakeUsersRepository.users[0])
-
         expect(FakeUsersRepository.users.length).toBe(2);
-        console.log(FakeUsersRepository.users[1])
         expect(FakeUsersRepository.users[1].cpf.replace(/[^\d]/g, '')).toBe(
             cpfRequest,
             );
@@ -50,11 +45,10 @@ describe('CreateUser', () => {
         return user;
     });
 
-    it('Fazendo a criação do Full Name', async () => {
+    it.only('Fazendo a criação do Full Name', async () => {
         const fullNameRequest = 'Lucas Paulo de Sousa';
         const user = await FakeUsersRepository.findById(sub);
         const fullNameArray = fullNameRequest.split(' ')
-
 
         if (user?.cpf) {
             if (fullNameRequest === user.full_name || !user?.full_name) {
@@ -90,7 +84,7 @@ describe('CreateUser', () => {
         return user;
     });
 
-    it('Fazendo a criação do Birh-date', async () => {
+    it.only('Fazendo a criação do Birh-date', async () => {
         const birhDayRequest = '20092002';
         const birthday = validators.mBirthDay(birhDayRequest)
 
@@ -129,7 +123,7 @@ describe('CreateUser', () => {
         return user;
     });
 
-    it('Fazendo a criação do Phone', async () => {
+    it.only('Fazendo a criação do Phone', async () => {
         const phoneReq = 57639034735;
 
         const user = await FakeUsersRepository.findById(sub);
@@ -157,7 +151,7 @@ describe('CreateUser', () => {
         return user;
     });
 
-    it('Fazendo a criação do Address', async () => {
+    it.only('Fazendo a criação do Address', async () => {
         const user = await FakeUsersRepository.findById(sub);
 
         const cepReq = '78158750';
@@ -241,13 +235,10 @@ describe('CreateUser', () => {
             });
         }
 
-        console.log(FakeUsersRepository.users[0])
         expect(FakeUsersRepository.users.length).toBe(2);
         expect(FakeUsersRepository.users[1].amount_requested).toBe(
             amount_requestedReq,
         );
-
-        console.log(FakeUsersRepository.users[1])
 
         return user;
     });
