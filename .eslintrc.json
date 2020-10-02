@@ -25,6 +25,9 @@
     ],
     "rules": {
         "no-console": "off",
+        "max-classes-per-file": "off",
+        // "import/export": "off",
+        "consistent-return": "off",
         "@typescript-eslint/no-explicit-any": "off",
         "no-await-in-loop": "off",
         "no-restricted-syntax": "off",
@@ -37,7 +40,7 @@
               "ts": "never"
             }
           ],
-          "prettier/prettier": "error",
+          "prettier/prettier": "off",
           "no-plusplus":"off",
           "camelcase": "off",
           "no-useless-constructor":"off",

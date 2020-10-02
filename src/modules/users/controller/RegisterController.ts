@@ -4,8 +4,6 @@ import { hashSync } from 'bcryptjs';
 import AuthenticateUserService from '../services/AuthenticateUserService';
 import userService from '../services/CreateUserServices';
 
-// import validators from '../validators/format';
-
 class RegisterController {
     public async create(req: Request, res: Response): Promise<Response> {
         const { email, password } = req.body;
@@ -30,7 +28,6 @@ class RegisterController {
 
             delete user?.password;
 
-            console.log('OIII', user);
             return res.status(200).json({
                 user,
                 token,

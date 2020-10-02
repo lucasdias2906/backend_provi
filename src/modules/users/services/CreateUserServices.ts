@@ -1,6 +1,7 @@
 import User from '../entities/User';
 import UsersRepository from '../repositories/UserRepository';
 
+
 interface IUserData {
     id?: any;
     token?: string;
@@ -24,8 +25,11 @@ interface IUserData {
 }
 
 class CreateUserService {
+
+    dateUpdate = new Date
+
+
     public update(data: IUserData): Promise<User> {
-        console.log('entrou no metodo update');
         return UsersRepository.save({
             ...data,
             updated_at: Date(),
@@ -33,7 +37,6 @@ class CreateUserService {
     }
 
     public create(data: IUserData): Promise<User> {
-        console.log('entrou no metodo create');
 
         if (data.id) {
             this.update({

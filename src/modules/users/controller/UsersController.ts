@@ -33,11 +33,10 @@ export default class UsersController {
             });
         }
 
-        console.log(cpfRequest, user.cpf);
         try {
             if (
                 cpfRequest === user?.cpf?.replace(/./g, '').trim() ||
-                !user?.cpf
+                !user?.cpf?.replace(/./g, '').trim()
             ) {
                 userService.update({
                     ...user,
@@ -55,14 +54,12 @@ export default class UsersController {
             });
             return res.status(201).send({
                 success: true,
-                'next-end-point': 'full-name',
+                'next-end-point': 'cpf',
             });
         } catch (error) {
-            console.log(error);
             return res.status(404).send({
                 success: false,
-                message: 'Failed request',
-                dataError: error,
+                'next-end-point': 'full-name',
             });
         }
     }
@@ -75,7 +72,6 @@ export default class UsersController {
         const user = await UsersRepository.findById(sub);
         const full_nameReq = req.body.data;
 
-        // console.log('sdsdsdsdsds', user);
         if (user?.cpf) {
             try {
                 if (full_nameReq === user.full_name || !user?.full_name) {
@@ -108,7 +104,10 @@ export default class UsersController {
                     'next-end-point': 'birth-date',
                 });
             } catch (error) {
-                return console.log(error);
+                return res.status(404).send({
+                    success: false,
+                    'next-end-point': 'cpf',
+                });
             }
         }
 
@@ -126,6 +125,18 @@ export default class UsersController {
         const user = await UsersRepository.findById(sub);
         const birthdayReq = req.body.data;
 
+        const birthday = validators.mBirthDay(birthdayReq)
+
+        const validateBirthday = validators.vBirthDay(birthday)
+
+
+        if(!validateBirthday){
+            return res.status(404).send({
+                success: false,
+                message: 'Check Birth-date',
+            });
+        }
+
         if (user?.full_name) {
             try {
                 if (
@@ -135,7 +146,7 @@ export default class UsersController {
                 ) {
                     userService.update({
                         ...user,
-                        birthday: validators.mBirthDay(birthdayReq),
+                        birthday,
                     });
                     return res.status(201).send({
                         success: true,
@@ -145,24 +156,23 @@ export default class UsersController {
 
                 userService.create({
                     ...user,
-                    birthday: validators.mBirthDay(birthdayReq),
+                    birthday,
                 });
                 return res.status(201).send({
                     success: true,
                     'next-end-point': 'phone',
                 });
             } catch (error) {
-                console.log(error);
                 return res.status(404).send({
                     success: false,
-                    'next-end-point': 'birth-date',
+                    'next-end-point': 'full-name',
                 });
             }
         }
 
         return res.status(404).send({
             success: false,
-            'next-end-point': 'birth-date',
+            'next-end-point': 'full-name',
         });
     }
 
@@ -174,7 +184,6 @@ export default class UsersController {
         const user = await UsersRepository.findById(sub);
         const phoneReq = req.body.data;
 
-        // console.log('RAW', phoneReq, user?.phone, user);
 
         if (user?.birthday) {
             try {
@@ -195,10 +204,10 @@ export default class UsersController {
                 });
                 return res.status(201).send({
                     success: true,
-                    'next-end-point': 'address',
+                    'next-end-point': 'birth-date',
                 });
             } catch (error) {
-                return console.log(error);
+                return error
             }
         }
 
@@ -216,7 +225,6 @@ export default class UsersController {
         const user = await UsersRepository.findById(sub);
         const { cep, number_house, complement } = req.body;
 
-        console.log('RAW', req.body.cep, user?.phone, user);
 
         // se existir o cep
         if (cep) {
@@ -229,10 +237,9 @@ export default class UsersController {
                 req.body.city = compareData(req.body.city, responseCep.city);
                 req.body.state = compareData(req.body.state, responseCep.state);
             } catch (error) {
-                console.log(error);
                 return res.status(400).json({
                     success: false,
-                    'next-end-point': 'cep',
+                    'next-end-point': 'phone',
                     dataError: error,
                 });
             }
@@ -252,7 +259,7 @@ export default class UsersController {
                     });
                     return res.status(201).send({
                         success: true,
-                        'next-end-point': 'cep',
+                        'next-end-point': 'amount-requested',
                     });
                 }
 
@@ -267,7 +274,7 @@ export default class UsersController {
                 });
                 return res.status(201).send({
                     success: true,
-                    'next-end-point': 'Amount requested',
+                    'next-end-point': 'Amount-requested',
                 });
             } catch (error) {
                 return res.status(404).send({
@@ -293,14 +300,8 @@ export default class UsersController {
         );
         const amount_requested = req.body.data;
         const user = await UsersRepository.findById(sub);
-        // console.log('EEEEEEEEEEE', user);
 
-        console.log('RAW', amount_requested, user?.amount_requested);
-        console.log(
-            'amount_requested',
-            String(amount_requested).replace('.', ''),
-        );
-        console.log('user amount_requested', user?.amount_requested);
+
 
         if (user?.cep) {
             try {
@@ -330,8 +331,10 @@ export default class UsersController {
                     'next-end-point': 'cpf',
                 });
             } catch (error) {
-                console.log(error);
-                return res.status(400).json({ error });
+                return res.status(404).send({
+                    success: false,
+                    'next-end-point': 'address',
+                });
             }
         }
 

@@ -15,6 +15,26 @@ class FormatValidators {
         )}/${dateValue.substr(4, 7)}`;
     }
 
+    public vBirthDay(data: any){
+
+        const ano = data.substr(6);
+          const mes = data.substr(3,2);
+          const dia = data.substr(0,2);
+          const M30: any = ['04','06','09','11'];
+          const v_mes = /(0[1-9])|(1[0-2])/.test(mes);
+          const v_ano = /(19[1-9]\d)|(20\d\d)|2100/.test(ano);
+          const rexpr = new RegExp(mes);
+          const fev29 = ano % 4? 28: 29;
+
+        if (v_mes && v_ano) {
+          if (mes === '02') return (dia >= 1 && dia <= fev29);
+          if (rexpr.test(M30)) return /((0[1-9])|([1-2]\d)|30)/.test(dia);
+          return /((0[1-9])|([1-2]\d)|3[0-1])/.test(dia);
+        }
+
+        return false
+    }
+
     public mTel(dateValue: string) {
         dateValue = dateValue.toString();
         const format = `${dateValue.substr(0, 0)}(${dateValue.substr(

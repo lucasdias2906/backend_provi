@@ -2,7 +2,6 @@ import {
     Entity,
     Column,
     PrimaryGeneratedColumn,
-    // CreateDateColumn,
     UpdateDateColumn,
 } from 'typeorm';
 
@@ -60,10 +59,10 @@ class User {
     active?: boolean;
 
     @Column('timestamp with time zone')
-    created_at?: Date;
+    created_at?: any;
 
     @UpdateDateColumn()
-    updated_at?: Date;
+    updated_at?: any;
 }
 
 export default User;

@@ -5,6 +5,9 @@ import ICreateUserDTO from '../../modules/users/dtos/ICreateUserDTO';
 import User from '../../modules/users/entities/User';
 
 class FakeUsersRepository implements IUsersRepository {
+
+    dateUpdate = new Date()
+
     public users: User[] = [
         {
             id: '67',
@@ -14,16 +17,16 @@ class FakeUsersRepository implements IUsersRepository {
             email: 'lucas@gmail.com',
             password:
                 '$2a$10$9pEUds50VmJgaVGH6AWxseaM8Mp2XiiRwby.foSJxu7kDph3EnT2C',
-            cpf: '140.753.088-71',
-            birthday: '29/25/2002',
-            phone: 11957775255,
+            cpf: '924.368.121-44',
+            birthday: '29/02/2002',
+            phone: 23152251499,
             cep: '07790890',
             street: 'Avenida das Palmeiras',
             number_house: 250,
             complement: 'apto 114',
             state: 'São Paulo',
             city: 'Cajamar',
-            amount_requested: 150020,
+            amount_requested: 1500.20,
             active: true,
             created_at: new Date(),
             updated_at: new Date(),
@@ -69,6 +72,11 @@ class FakeUsersRepository implements IUsersRepository {
                 this.users[i] = userdata;
             }
         }
+
+        await this.save({
+            ...userdata,
+            updated_at: this.dateUpdate,
+        })
     }
 
     public async save(user: User): Promise<User> {

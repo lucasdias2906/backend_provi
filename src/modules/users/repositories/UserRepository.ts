@@ -13,7 +13,6 @@ class UsersRepository implements IUsersRepository {
         return user;
     }
 
-    // preocurando por email
     public async findByEmail(email: string): Promise<User | undefined> {
         const user = await getRepository(User).findOne({
             where: { email },
@@ -48,20 +47,9 @@ class UsersRepository implements IUsersRepository {
     }
 
     public async save(user: ICreateUserDTO): Promise<User> {
-        console.log('REP', user);
         return getRepository(User).save(user);
     }
 
-    // public async createEmail({
-    //     email,
-    //     password,
-    // }: ICreateUserDTO): Promise<User> {
-    //     const user = getRepository(User).create({ email, password });
-
-    //     await getRepository(User).save(user);
-
-    //     return user;
-    // }
 }
 
 const usersRepository = new UsersRepository();

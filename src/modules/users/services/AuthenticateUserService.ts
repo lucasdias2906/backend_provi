@@ -1,11 +1,9 @@
 import { sign } from 'jsonwebtoken';
 
-import { compare } from 'bcryptjs';
 import User from '../entities/User';
 import authConfig from '../../../config/auth';
 import UsersRepository from '../repositories/UserRepository';
 
-// import AppError from '../../../errors/AppError';
 
 interface IRequest {
     email: string;
@@ -18,16 +16,11 @@ interface IResponse {
 }
 
 class AuthenticateUserService {
-    public async execute({ email, password }: IRequest): Promise<IResponse> {
+    public async execute({ email }: IRequest): Promise<IResponse> {
         const user = await Promise.resolve(UsersRepository.findByEmail(email));
-
-        // if (!user) {
-        //     throw new Error('Incorrect email/password combination');
-        // }
 
         const { expiresIn, secret } = authConfig.jwt;
 
-        console.log('eeeee', user);
         const token = sign({}, secret, {
             subject: user?.id.toString(),
             expiresIn,
