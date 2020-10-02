@@ -52,14 +52,15 @@ export default class UsersController {
                 ...user,
                 cpf: validators.formatcpf(cpfRequest),
             });
+
             return res.status(201).send({
                 success: true,
-                'next-end-point': 'cpf',
+                'next-end-point': 'full-name',
             });
         } catch (error) {
             return res.status(404).send({
                 success: false,
-                'next-end-point': 'full-name',
+                'next-end-point': 'cpf',
             });
         }
     }
@@ -72,6 +73,8 @@ export default class UsersController {
         const user = await UsersRepository.findById(sub);
         const full_nameReq = req.body.data;
 
+        const fullNameArray = full_nameReq.slipt(" ")
+
         if (user?.cpf) {
             try {
                 if (full_nameReq === user.full_name || !user?.full_name) {
@@ -82,10 +85,7 @@ export default class UsersController {
                             .split(' ')
                             .slice(0, 1)
                             .join(' '),
-                        last_name: full_nameReq
-                            .split(' ')
-                            .slice(3, 4)
-                            .join(' '),
+                            last_name: fullNameArray.slice(1, fullNameArray.length + 1).join(" "),
                     });
                     return res.status(201).send({
                         success: true,
@@ -97,7 +97,7 @@ export default class UsersController {
                     ...user,
                     full_name: full_nameReq,
                     first_name: full_nameReq.split(' ').slice(0, 1).join(' '),
-                    last_name: full_nameReq.split(' ').slice(3, 4).join(' '),
+                    last_name: fullNameArray.slice(1, fullNameArray.length + 1).join(" "),
                 });
                 return res.status(201).send({
                     success: true,
@@ -204,10 +204,13 @@ export default class UsersController {
                 });
                 return res.status(201).send({
                     success: true,
-                    'next-end-point': 'birth-date',
+                    'next-end-point': 'address',
                 });
             } catch (error) {
-                return error
+                return res.status(404).send({
+                    success: false,
+                    'next-end-point': 'birth-date',
+                });
             }
         }
 

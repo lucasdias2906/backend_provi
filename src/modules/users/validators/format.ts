@@ -46,7 +46,7 @@ class FormatValidators {
     }
 
     public convertToCent(amount: number) {
-        return amount * 100;
+        return amount / 100;
     }
 
     public async firstName(nome: string): Promise<any> {

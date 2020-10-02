@@ -57,6 +57,14 @@ class FakeUsersRepository implements IUsersRepository {
 
         Object.assign(user, userdata);
 
+        if (userdata.id) {
+            this.update({
+                ...userdata,
+                active: false,
+                updated_at: Date(),
+            });
+        }
+
         this.users.push(user);
 
         return user;

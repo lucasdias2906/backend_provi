@@ -19,7 +19,7 @@ const compareData = (rawData: string, curentData: string) => {
 describe('CreateUser', () => {
     it('Fazendo a criação do cpf', async () => {
         const user = await FakeUsersRepository.findById(sub);
-        const cpfRequest = '92436812144';
+        const cpfRequest = '25488538372';
 
         expect(validators.validatorCpf(cpfRequest)).toBe(true);
 
@@ -35,6 +35,7 @@ describe('CreateUser', () => {
                 updated_at: Date(),
             });
 
+
             expect(FakeUsersRepository.users[0].updated_at).toBe(FakeUsersRepository.dateUpdate);
 
             return;
@@ -47,6 +48,9 @@ describe('CreateUser', () => {
         });
 
         expect(FakeUsersRepository.users.length).toBe(2);
+        console.log("FAKE USER",FakeUsersRepository.users[0])
+
+        console.log("DEPOIS DO CREATE",FakeUsersRepository.users[1])
 
         expect(FakeUsersRepository.users[1].cpf.replace(/[^\d]/g, '')).toBe(
             cpfRequest,
@@ -60,6 +64,9 @@ describe('CreateUser', () => {
 
         const user = await FakeUsersRepository.findById(sub);
 
+        const fullNameArray = fullNameRequest.split(' ')
+        console.log(fullNameArray)
+
         if (user?.cpf) {
             if (fullNameRequest === user.full_name || !user?.full_name) {
                 FakeUsersRepository.update({
@@ -69,11 +76,9 @@ describe('CreateUser', () => {
                         .split(' ')
                         .slice(0, 1)
                         .join(' '),
-                    last_name: fullNameRequest.split(' ').slice(3, 4).join(' '),
+                        last_name: fullNameArray.slice(1, fullNameArray.length + 1).join(" "),
                     updated_at: Date(),
                 });
-
-
                 expect(FakeUsersRepository.users[0].updated_at).toBe(FakeUsersRepository.dateUpdate);
 
                 return;
@@ -84,10 +89,11 @@ describe('CreateUser', () => {
             ...user,
             full_name: fullNameRequest,
             first_name: fullNameRequest.split(' ').slice(0, 1).join(' '),
-            last_name: fullNameRequest.split(' ').slice(3, 4).join(' '),
+            last_name: fullNameArray.slice(1, fullNameArray.length + 1).join(" "),
         });
 
         expect(FakeUsersRepository.users.length).toBe(2);
+        console.log(FakeUsersRepository.users[1])
         expect(FakeUsersRepository.users[1].full_name).toBe(fullNameRequest);
 
         return user;
@@ -217,8 +223,8 @@ describe('CreateUser', () => {
         return user;
     });
 
-    it('Fazendo a criação do Amount Requested', async () => {
-        const amount_requested = 150020;
+    it.only('Fazendo a criação do Amount Requested', async () => {
+        const amount_requested = 150044;
 
         const amount_requestedReq = validators.convertToCent(amount_requested)
 
@@ -247,6 +253,7 @@ describe('CreateUser', () => {
         }
 
         expect(FakeUsersRepository.users.length).toBe(2);
+        console.log(FakeUsersRepository.users[1])
         expect(FakeUsersRepository.users[1].amount_requested).toBe(
             amount_requestedReq,
         );
