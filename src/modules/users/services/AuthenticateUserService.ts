@@ -6,8 +6,9 @@ import UsersRepository from '../repositories/UserRepository';
 
 
 interface IRequest {
-    email: string;
-    password: string;
+    id?: any
+    email?: string
+    password?:string
 }
 
 interface IResponse {
@@ -16,8 +17,8 @@ interface IResponse {
 }
 
 class AuthenticateUserService {
-    public async execute({ email }: IRequest): Promise<IResponse> {
-        const user = await Promise.resolve(UsersRepository.findByEmail(email));
+    public async execute({ id }: IRequest): Promise<IResponse> {
+        const user = await Promise.resolve(UsersRepository.findById(id));
 
         const { expiresIn, secret } = authConfig.jwt;
 

@@ -7,14 +7,7 @@ import userService from '../services/CreateUserServices';
 import validators from '../validators/format';
 
 import authConfig from '../../../config/auth';
-// import encrypted from '../providers/Hash/implementations/BCryptHashProvider';
 
-const compareData = (rawData: string, curentData: string) => {
-    if (rawData?.toLocaleLowerCase() === curentData?.toLocaleLowerCase())
-        return curentData;
-
-    return rawData;
-};
 
 export default class UsersController {
     public async createCPF(req: Request, res: Response): Promise<any> {
@@ -73,7 +66,7 @@ export default class UsersController {
         const user = await UsersRepository.findById(sub);
         const full_nameReq = req.body.data;
 
-        const fullNameArray = full_nameReq.slipt(" ")
+        const fullNameArray = full_nameReq.split(" ")
 
         if (user?.cpf) {
             try {
@@ -204,7 +197,7 @@ export default class UsersController {
                 });
                 return res.status(201).send({
                     success: true,
-                    'next-end-point': 'address',
+                    'next-end-point': 'birth-date',
                 });
             } catch (error) {
                 return res.status(404).send({
@@ -226,25 +219,21 @@ export default class UsersController {
             authConfig.jwt.secret,
         );
         const user = await UsersRepository.findById(sub);
-        const { cep, number_house, complement } = req.body;
+        const {cep} = req.body;
 
 
-        // se existir o cep
         if (cep) {
             try {
                 const responseCep = await CepPromise(cep);
-                req.body.street = compareData(
-                    req.body.street,
-                    responseCep.street,
-                );
-                req.body.city = compareData(req.body.city, responseCep.city);
-                req.body.state = compareData(req.body.state, responseCep.state);
+                if(req.body.street !== responseCep.street || req.body.city !== responseCep.city || req.body.state !== responseCep.state){
+                    return res.status(400).json({
+                        success: false,
+                        'next-end-point': 'phone',
+                    });
+                }
+
             } catch (error) {
-                return res.status(400).json({
-                    success: false,
-                    'next-end-point': 'phone',
-                    dataError: error,
-                });
+                return error
             }
         }
 
@@ -255,8 +244,8 @@ export default class UsersController {
                         ...user,
                         cep: req.body.cep,
                         street: req.body.street,
-                        number_house,
-                        complement,
+                        number_house: req.body.number_house,
+                        complement: req.body.complement,
                         city: req.body.city,
                         state: req.body.state,
                     });
@@ -270,8 +259,8 @@ export default class UsersController {
                     ...user,
                     cep: req.body.cep,
                     street: req.body.street,
-                    number_house,
-                    complement,
+                    number_house: req.body.number_house,
+                    complement: req.body.complement,
                     city: req.body.city,
                     state: req.body.state,
                 });

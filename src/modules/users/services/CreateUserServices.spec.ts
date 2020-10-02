@@ -9,17 +9,11 @@ const tokenReq =
     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2MDE1MjIwNTksImV4cCI6MTY4NzkyMjA1OSwic3ViIjoiNjcifQ.bag9oiGA3oYJmF4pQe3ac0owV0i7tCzf65p6lpSSmdc';
 const { sub }: any = verify(tokenReq, authConfig.jwt.secret);
 
-const compareData = (rawData: string, curentData: string) => {
-    if (rawData?.toLocaleLowerCase() === curentData?.toLocaleLowerCase())
-        return curentData;
-
-    return rawData;
-};
 
 describe('CreateUser', () => {
-    it('Fazendo a criação do cpf', async () => {
+    it.only('Fazendo a criação do cpf', async () => {
         const user = await FakeUsersRepository.findById(sub);
-        const cpfRequest = '25488538372';
+        const cpfRequest = '36824402591';
 
         expect(validators.validatorCpf(cpfRequest)).toBe(true);
 
@@ -35,9 +29,7 @@ describe('CreateUser', () => {
                 updated_at: Date(),
             });
 
-
             expect(FakeUsersRepository.users[0].updated_at).toBe(FakeUsersRepository.dateUpdate);
-
             return;
 
         }
@@ -48,10 +40,6 @@ describe('CreateUser', () => {
         });
 
         expect(FakeUsersRepository.users.length).toBe(2);
-        console.log("FAKE USER",FakeUsersRepository.users[0])
-
-        console.log("DEPOIS DO CREATE",FakeUsersRepository.users[1])
-
         expect(FakeUsersRepository.users[1].cpf.replace(/[^\d]/g, '')).toBe(
             cpfRequest,
             );
@@ -59,13 +47,10 @@ describe('CreateUser', () => {
         return user;
     });
 
-    it('Fazendo a criação do Full Name', async () => {
-        const fullNameRequest = 'Lucas Paulo de Sousa';
-
+    it.only('Fazendo a criação do Full Name', async () => {
+        const fullNameRequest = 'Lucas Dias de Silva';
         const user = await FakeUsersRepository.findById(sub);
-
         const fullNameArray = fullNameRequest.split(' ')
-        console.log(fullNameArray)
 
         if (user?.cpf) {
             if (fullNameRequest === user.full_name || !user?.full_name) {
@@ -93,15 +78,13 @@ describe('CreateUser', () => {
         });
 
         expect(FakeUsersRepository.users.length).toBe(2);
-        console.log(FakeUsersRepository.users[1])
         expect(FakeUsersRepository.users[1].full_name).toBe(fullNameRequest);
 
         return user;
     });
 
-    it('Fazendo a criação do Birh-date', async () => {
-        const birhDayRequest = '27082002';
-
+    it.only('Fazendo a criação do Birh-date', async () => {
+        const birhDayRequest = '20092002';
         const birthday = validators.mBirthDay(birhDayRequest)
 
         expect(validators.vBirthDay(birthday)).toBe(true);
@@ -139,8 +122,8 @@ describe('CreateUser', () => {
         return user;
     });
 
-    it('Fazendo a criação do Phone', async () => {
-        const phoneReq = 23152251499;
+    it.only('Fazendo a criação do Phone', async () => {
+        const phoneReq = 57639034735;
 
         const user = await FakeUsersRepository.findById(sub);
 
@@ -151,10 +134,7 @@ describe('CreateUser', () => {
                     phone: phoneReq,
                     updated_at: Date(),
                 });
-
-
                 expect(FakeUsersRepository.users[0].updated_at).toBe(FakeUsersRepository.dateUpdate);
-
                 return;
             }
 
@@ -170,22 +150,25 @@ describe('CreateUser', () => {
         return user;
     });
 
-    it('Fazendo a criação do Address', async () => {
+    it.only('Fazendo a criação do Address', async () => {
         const user = await FakeUsersRepository.findById(sub);
 
-        const cepReq = '64215900';
-        let streetReq = 'Rua Franklin Veras 120';
-        let cityReq = 'Parnaíba';
-        let stateReq = 'Piauí';
-        const numberHouseReq = 250;
+        const cepReq = '78158750';
+        const streetReq = 'Rua Peru';
+        const cityReq = 'Várzea Grande';
+        const stateReq = 'MT';
+        const numberHouseReq = 22;
         const complementReq = 'Casa 2';
 
         if (cepReq) {
             const responseCep = await CepPromise(cepReq);
 
-            streetReq = compareData(streetReq, responseCep.street);
-            cityReq = compareData(cityReq, responseCep.city);
-            stateReq = compareData(stateReq, responseCep.state);
+            if(streetReq!== responseCep.street || cityReq !== responseCep.city || stateReq!== responseCep.state){
+                expect(responseCep.street === streetReq).toBe(true)
+                expect(responseCep.city === cityReq).toBe(true)
+                expect(responseCep.state === stateReq).toBe(true)
+            }
+
         }
 
         if (user?.phone) {
@@ -224,8 +207,7 @@ describe('CreateUser', () => {
     });
 
     it.only('Fazendo a criação do Amount Requested', async () => {
-        const amount_requested = 150044;
-
+        const amount_requested = 157432;
         const amount_requestedReq = validators.convertToCent(amount_requested)
 
         const user = await FakeUsersRepository.findById(sub);
@@ -253,11 +235,10 @@ describe('CreateUser', () => {
         }
 
         expect(FakeUsersRepository.users.length).toBe(2);
-        console.log(FakeUsersRepository.users[1])
         expect(FakeUsersRepository.users[1].amount_requested).toBe(
             amount_requestedReq,
         );
 
         return user;
     });
-});
+})

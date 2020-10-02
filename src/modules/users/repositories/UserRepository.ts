@@ -21,14 +21,6 @@ class UsersRepository implements IUsersRepository {
         return user;
     }
 
-    public async findByCpf(cpf: string): Promise<User | undefined> {
-        const user = await getRepository(User).findOne({
-            where: { cpf },
-        });
-
-        return user;
-    }
-
     public async findByToken(token: string): Promise<User | undefined> {
         const user = await getRepository(User).findOne({
             where: { token, active: true },

@@ -18,15 +18,15 @@ class FakeUsersRepository implements IUsersRepository {
             password:
                 '$2a$10$9pEUds50VmJgaVGH6AWxseaM8Mp2XiiRwby.foSJxu7kDph3EnT2C',
             cpf: '924.368.121-44',
-            birthday: '29/02/2002',
+            birthday: '29/06/2002',
             phone: 23152251499,
             cep: '07790890',
             street: 'Avenida das Palmeiras',
             number_house: 250,
             complement: 'apto 114',
-            state: 'São Paulo',
+            state: 'SP',
             city: 'Cajamar',
-            amount_requested: 1500.20,
+            amount_requested: 1500.22,
             active: true,
             created_at: new Date(),
             updated_at: new Date(),
@@ -39,15 +39,8 @@ class FakeUsersRepository implements IUsersRepository {
         return findUser;
     }
 
-    // vai preocurar um usuari onde o email seja igual ao email q estamos recebendo
     public async findByEmail(email: string): Promise<User | undefined> {
         const findUser = this.users.find(user => user.email === email);
-
-        return findUser;
-    }
-
-    public async findByCpf(cpf: string): Promise<User | undefined> {
-        const findUser = this.users.find(user => user.cpf === cpf);
 
         return findUser;
     }
@@ -101,5 +94,3 @@ class FakeUsersRepository implements IUsersRepository {
 const fakeUsersRepository = new FakeUsersRepository();
 
 export default fakeUsersRepository;
-
-//

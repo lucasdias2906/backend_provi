@@ -49,6 +49,14 @@ class FormatValidators {
         return amount / 100;
     }
 
+    public compareData (rawData: string, curentData: string) {
+
+        if(rawData !== curentData){
+            return new Error("ERRO CEP")
+        }
+
+    };
+
     public async firstName(nome: string): Promise<any> {
         const arr = nome.split(' ');
         if (arr[1][0].toUpperCase() !== arr[1][0]) arr.splice(1, 0);
